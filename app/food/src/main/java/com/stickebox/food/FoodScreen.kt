@@ -47,7 +47,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 sealed class NavigationEvent {
-    object AddFood : NavigationEvent()
+    data object AddFood : NavigationEvent()
 }
 
 @OptIn(ExperimentalFoundationApi::class)

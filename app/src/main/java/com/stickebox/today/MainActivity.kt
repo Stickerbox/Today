@@ -38,6 +38,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.stickebox.common.generateRandomColor
+import com.stickebox.food.AddFoodItemScreen
 import com.stickebox.food.FoodScreen
 import com.stickebox.food.NavigationEvent
 import com.stickebox.home.ui.HomeScreen
@@ -102,6 +103,7 @@ fun MainActivityView(
                         when (it) {
                             is NavigationEvent.AddFood -> {
                                 // Show camera view
+                                navController.navigate(Screens.AddFood.routeName)
                             }
                         }
                     }
@@ -114,6 +116,12 @@ fun MainActivityView(
                     isBottomDark = {
                         shouldNavItemsBeDark = it
                     },
+                    viewModel = viewModel()
+                )
+            }
+            composable(Screens.AddFood.routeName) {
+                AddFoodItemScreen(
+                    modifier = Modifier.padding(bottom = componentHeight).padding(bottom = 16.dp),
                     viewModel = viewModel()
                 )
             }

@@ -14,9 +14,10 @@ data class BottomNavigationBarItem(
 )
 
 sealed class Screens(val routeName: String) {
-    object Home : Screens("/home")
-    object Food : Screens("/food")
-    object History : Screens("/history")
+    data object Home : Screens("/home")
+    data object Food : Screens("/food")
+    data object History : Screens("/history")
+    data object AddFood : Screens("/add-food")
 }
 
 val BOTTOM_NAVIGATION_BAR_ITEMS = listOf(
