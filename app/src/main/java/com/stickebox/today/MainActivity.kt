@@ -122,6 +122,7 @@ fun MainActivityView(
             composable(Screens.AddFood.routeName) {
                 AddFoodItemScreen(
                     modifier = Modifier.padding(bottom = componentHeight).padding(bottom = 16.dp),
+                    onComplete = { navController.navigate(Screens.Food.routeName) },
                     viewModel = viewModel()
                 )
             }

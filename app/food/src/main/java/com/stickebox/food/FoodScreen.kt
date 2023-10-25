@@ -1,6 +1,8 @@
 package com.stickebox.food
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,16 +28,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.palette.graphics.Palette
 import com.stickebox.common.isDark
 import com.stickebox.common.lightOrDark
 import com.stickebox.food.NavigationEvent.AddFood
@@ -129,7 +138,8 @@ fun FoodScreen(
                         FoodListItem(
                             modifier = Modifier.padding(vertical = 18.dp),
                             timeAdded = foodItem.timeAdded,
-                            description = foodItem.description
+                            description = foodItem.description,
+                            image = foodItem.image
                         )
                     }
                 }
@@ -142,23 +152,37 @@ fun FoodScreen(
 fun FoodListItem(
     modifier: Modifier = Modifier,
     timeAdded: String,
-    description: String
+    description: String,
+    image: ImageBitmap,
 ) {
+
+    var dominantColor by remember { mutableStateOf(Color.LightGray) }
+    Palette.Builder(image.asAndroidBitmap()).generate { palette ->
+        dominantColor =
+            Color(palette?.getDominantColor(Color.LightGray.toArgb()) ?: Color.LightGray.toArgb()).copy(
+                alpha = 0.4f
+            )
+    }
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(26.dp))
-            .background(Color.LightGray)
+            .background(dominantColor)
             .padding(16.dp)
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
         Row {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(26.dp))
-                    .background(Color.DarkGray)
-                    .size(100.dp)
-            )
+            Box {
+                Image(
+                    bitmap = image,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .shadow(8.dp, shape = RoundedCornerShape(26.dp), spotColor = Color.DarkGray)
+                        .clip(RoundedCornerShape(26.dp))
+                        .size(100.dp)
+                )
+            }
             Spacer(modifier = Modifier.padding(horizontal = 8.dp))
             Column {
                 Text(

@@ -1,3 +1,5 @@
 package com.stickebox.food
 
-data class FoodItem(val timeAdded: String, val description: String)
+import androidx.compose.ui.graphics.ImageBitmap
+
+data class FoodItem(val timeAdded: String, val description: String, val image: ImageBitmap)

@@ -1,5 +1,12 @@
 package com.stickebox.food
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.viewModelScope
+import com.stickebox.common.generateRandomColor
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -8,7 +15,8 @@ data class PersistedFoodItem(val timeAdded: LocalDateTime, val description: Stri
 fun PersistedFoodItem.toDomainModel(formatter: DateTimeFormatter) =
     FoodItem(
         timeAdded = this.timeAdded.format(formatter).lowercase(),
-        description = this.description
+        description = this.description,
+        image = randomBitmapColor().asImageBitmap()
     )
 
 val TEST_PERSISTED_FOOD_ITEMS = listOf(
@@ -33,3 +41,10 @@ val TEST_PERSISTED_FOOD_ITEMS = listOf(
         description = "Dog"
     )
 )
+
+private fun randomBitmapColor(): Bitmap {
+    val bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    canvas.drawColor(generateRandomColor().toArgb())
+    return bitmap
+}
