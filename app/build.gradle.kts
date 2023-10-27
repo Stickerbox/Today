@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -17,6 +18,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    sourceSets {
+        kotlin.sourceSets {
+            getByName("main") {
+                kotlin.srcDir("build/generated/ksp/main/kotlin")
+            }
         }
     }
 
@@ -65,6 +74,15 @@ dependencies {
     implementation(project(":app:uitheme"))
     implementation(project(":app:food"))
     implementation(project(":app:common"))
+
+    val koinVersion = "3.5.0"
+    val koinKspVersion = "1.3.0"
+
+    implementation("io.insert-koin:koin-android:$koinVersion")
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-androidx-compose-navigation:$koinVersion")
+    implementation("io.insert-koin:koin-annotations:$koinKspVersion")
+    ksp("io.insert-koin:koin-ksp-compiler:$koinKspVersion")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 

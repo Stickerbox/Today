@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.stickebox.common.TodoItem
 import com.stickebox.uitheme.theme.TodayTheme
+import java.time.LocalDateTime
 
 @Composable
 fun TodayItem(
@@ -68,7 +69,9 @@ fun TodayItemPreview() {
             item = TodoItem(
                 time = "11 am - 12 pm",
                 text = "Do French",
-                isCurrentItem = false
+                isCurrentItem = false,
+                fromTime = LocalDateTime.now(),
+                toTime = LocalDateTime.now()
             ),
             shouldBeDark = true
         )

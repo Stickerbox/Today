@@ -3,7 +3,6 @@ package com.stickebox.today
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -45,6 +43,7 @@ import com.stickebox.home.ui.HomeScreen
 import com.stickebox.today.domain.BOTTOM_NAVIGATION_BAR_ITEMS
 import com.stickebox.today.domain.Screens
 import com.stickebox.uitheme.theme.TodayTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,7 +88,7 @@ fun MainActivityView(
                     isBottomDark = {
                         shouldNavItemsBeDark = it
                     },
-                    viewModel = viewModel()
+                    viewModel = koinViewModel()
                 )
             }
             composable(Screens.Food.routeName) {
@@ -98,7 +97,7 @@ fun MainActivityView(
                     isBottomDark = {
                         shouldNavItemsBeDark = !it
                     },
-                    viewModel = viewModel(),
+                    viewModel = koinViewModel(),
                     onNavigationEvent = {
                         when (it) {
                             is NavigationEvent.AddFood -> {
@@ -116,14 +115,14 @@ fun MainActivityView(
                     isBottomDark = {
                         shouldNavItemsBeDark = it
                     },
-                    viewModel = viewModel()
+                    viewModel = koinViewModel()
                 )
             }
             composable(Screens.AddFood.routeName) {
                 AddFoodItemScreen(
                     modifier = Modifier.padding(bottom = componentHeight).padding(bottom = 16.dp),
                     onComplete = { navController.navigate(Screens.Food.routeName) },
-                    viewModel = viewModel()
+                    viewModel = koinViewModel()
                 )
             }
         }

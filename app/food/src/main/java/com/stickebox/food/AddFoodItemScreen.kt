@@ -45,6 +45,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 
 typealias LegacyColor = android.graphics.Color
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddFoodItemScreen(

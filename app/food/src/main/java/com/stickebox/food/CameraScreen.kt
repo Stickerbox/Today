@@ -50,7 +50,10 @@ fun CameraScreen(
             modifier = modifier.fillMaxSize(),
             factory = { context ->
                 PreviewView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
                     setBackgroundColor(LegacyColor.WHITE)
                     scaleType = PreviewView.ScaleType.FILL_START
                 }.also { previewView ->
@@ -91,12 +94,10 @@ fun CameraScreen(
                         override fun onCaptureSuccess(image: ImageProxy) {
                             super.onCaptureSuccess(image)
 
-                            coroutineScope.launch {
-                                val imageBitmap = image.toBitmap().scale(500, 500)
-                                viewModel.imageCaptured(imageBitmap.rotate(90f))
-                                image.close()
-                                onComplete()
-                            }
+                            val imageBitmap = image.toBitmap().scale(500, 500)
+                            viewModel.imageCaptured(imageBitmap.rotate(90f))
+                            image.close()
+                            onComplete()
                         }
 
                         override fun onError(exception: ImageCaptureException) {

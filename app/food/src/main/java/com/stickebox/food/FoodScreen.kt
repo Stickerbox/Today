@@ -1,6 +1,5 @@
 package com.stickebox.food
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.items
@@ -26,10 +25,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import com.stickebox.food.NavigationEvent.AddFood
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -103,7 +105,6 @@ fun FoodScreen(
                     tint = Color.White
                 )
             }
-            val foodItems by viewModel.foodItems.collectAsState()
 
             fun Int.toTimeOfDay(): String {
                 return when (this) {
@@ -112,6 +113,8 @@ fun FoodScreen(
                     else -> "Evening"
                 }
             }
+
+            val foodItems by viewModel.foodItems.collectAsState(emptyMap())
 
             LazyColumn(modifier = listModifier.padding(top = 24.dp)) {
                 foodItems.forEach { section ->

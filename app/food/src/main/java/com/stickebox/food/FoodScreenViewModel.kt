@@ -1,55 +1,52 @@
 package com.stickebox.food
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import com.stickebox.common.FoodItem
+import com.stickebox.common.Repository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class FoodScreenViewModel : ViewModel() {
+@KoinViewModel
+class FoodScreenViewModel(
+    repository: Repository
+) : ViewModel() {
     private val headerFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d")
-    private val foodItemDateAddedFormatter = DateTimeFormatter.ofPattern("h:mm a")
-    val currentDate: String = LocalDateTime.now().format(headerFormatter)
+    private val now: LocalDateTime = LocalDateTime.now()
+    val currentDate: String = now.format(headerFormatter)
 
-    private val _foodItems: MutableStateFlow<Map<Int, List<FoodItem>>> =
-        MutableStateFlow((emptyMap()))
-    val foodItems: StateFlow<Map<Int, List<FoodItem>>>
-        get() = _foodItems.asStateFlow()
+    val foodItems: Flow<Map<Int, List<FoodItem>>> = repository.getFoodItems(now)
+        .map { foodItems ->
+            val map = hashMapOf<Int, MutableList<FoodItem>>()
 
-    init {
-        val map = hashMapOf<Int, MutableList<FoodItem>>()
-        viewModelScope.launch {
-            TEST_PERSISTED_FOOD_ITEMS.forEach { persistedFoodItem ->
-                if (persistedFoodItem.timeAdded.hour in 6..12) {
+            foodItems.forEach { foodItem ->
+                if (foodItem.timeAddedLocalDateTime.hour in 6..12) {
                     val list = map[0] ?: mutableListOf()
-                    list.add(persistedFoodItem.toDomainModel(foodItemDateAddedFormatter))
+                    list.add(foodItem)
                     map[0] = list
                 }
 
-                if (persistedFoodItem.timeAdded.hour in 13..16) {
+                if (foodItem.timeAddedLocalDateTime.hour in 13..16) {
                     val list = map[1] ?: mutableListOf()
-                    list.add(persistedFoodItem.toDomainModel(foodItemDateAddedFormatter))
+                    list.add(foodItem)
                     map[1] = list
                 }
 
-                if (persistedFoodItem.timeAdded.hour in 17..24) {
+                if (foodItem.timeAddedLocalDateTime.hour in 17..24) {
                     val list = map[2] ?: mutableListOf()
-                    list.add(persistedFoodItem.toDomainModel(foodItemDateAddedFormatter))
+                    list.add(foodItem)
                     map[2] = list
                 }
 
-                if (persistedFoodItem.timeAdded.hour in 0..6) {
+                if (foodItem.timeAddedLocalDateTime.hour in 0..6) {
                     val list = map[2] ?: mutableListOf()
-                    list.add(persistedFoodItem.toDomainModel(foodItemDateAddedFormatter))
+                    list.add(foodItem)
                     map[2] = list
                 }
             }
 
-            _foodItems.emit(map)
+            return@map map
         }
-
-    }
 }

@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("io.realm.kotlin")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -23,10 +25,29 @@ android {
             )
         }
     }
+
+    sourceSets {
+        kotlin.sourceSets {
+            getByName("main") {
+                kotlin.srcDir("build/generated/ksp/main/kotlin")
+            }
+        }
+    }
+
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    sourceSets {
+        kotlin.sourceSets {
+            getByName("main") {
+                kotlin.srcDir("build/generated/ksp/main/kotlin")
+            }
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -51,6 +72,19 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+
+    api("io.realm.kotlin:library-base:1.11.0")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    val koinVersion = "3.5.0"
+    val koinKspVersion = "1.3.0"
+
+    api("io.insert-koin:koin-android:$koinVersion")
+    api("io.insert-koin:koin-core:$koinVersion")
+    api("io.insert-koin:koin-annotations:$koinKspVersion")
+    ksp("io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
