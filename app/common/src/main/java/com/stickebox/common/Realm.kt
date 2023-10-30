@@ -71,4 +71,42 @@ class Repository(
     suspend fun saveFoodItem(foodItem: FoodItem) {
         database.save(foodItem.toPersistedModel())
     }
+
+    fun getTodoItems(currentTime: LocalDateTime, dateTimeFormatter: DateTimeFormatter): Flow<List<TodoItem>> {
+        val initial = database.query<PersistedTodoItem>()
+            .asFlow()
+            .filter { it is InitialResults }
+            .map { it as InitialResults }
+            .map { it.list }
+            .map { it.distinct() }
+            .map { persistedTodoItems ->
+                persistedTodoItems.map {
+                    it.toDomainModel(currentTime, dateTimeFormatter)
+                }.filter { item ->
+                    item.toTime.dayOfYear == currentTime.dayOfYear
+                            && item.toTime.year == currentTime.year
+                }
+            }
+
+        val updates = database.query<PersistedTodoItem>()
+            .asFlow()
+            .filter { it is UpdatedResults }
+            .map { it as UpdatedResults }
+            .map { it.list }
+            .map { it.distinct() }
+            .map { persistedTodoItems ->
+                persistedTodoItems.map {
+                    it.toDomainModel(currentTime, dateTimeFormatter)
+                }.filter { item ->
+                    item.toTime.dayOfYear == currentTime.dayOfYear
+                            && item.toTime.year == currentTime.year
+                }
+            }
+
+        return merge(initial, updates)
+    }
+
+    suspend fun saveTodoItem(todoItem: TodoItem) {
+        database.save(todoItem.toPersistedModel())
+    }
 }

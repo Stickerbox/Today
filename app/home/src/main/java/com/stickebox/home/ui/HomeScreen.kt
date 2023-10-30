@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
@@ -44,6 +46,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +55,7 @@ import com.stickebox.common.generateComplimentaryColor
 import com.stickebox.common.isDark
 import com.stickebox.common.lightOrDark
 import com.stickebox.uitheme.theme.TodayTheme
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +85,6 @@ fun HomeScreen(
     }
 
     val shouldItemsBeDark = backgroundGradientStops.first().second.isDark().not()
-    val todoItems by viewModel.todoItems.collectAsState()
     var shouldShowDialog by remember { mutableStateOf(false) }
 
     isBottomDark?.invoke(backgroundGradientStops.last().second.isDark().not())
@@ -111,7 +114,19 @@ fun HomeScreen(
                         TextField(
                             value = newItemText,
                             onValueChange = { newItemText = it },
-                            label = { Text("What's next") }
+                            label = { Text("What's next") },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    val now = LocalDateTime.now()
+                                    val twoHours = now.minusMinutes(40L)
+                                    viewModel.saveTodoItem(
+                                        now, twoHours, newItemText
+                                    )
+                                    shouldShowDialog = false
+                                    newItemText = ""
+                                }
+                            )
                         )
 
                         Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -159,7 +174,11 @@ fun HomeScreen(
                                 fontSize = 20.sp,
                                 modifier = Modifier
                                     .clickable {
+                                        viewModel.saveTodoItem(
+                                            LocalDateTime.now(), LocalDateTime.now(), newItemText
+                                        )
                                         shouldShowDialog = false
+                                        newItemText = ""
                                     }
                                     .padding(12.dp)
                             )
@@ -210,6 +229,8 @@ fun HomeScreen(
                     tint = if (backgroundGradientStops.first().second.isDark()) Color.DarkGray else Color.White
                 )
             }
+
+            val todoItems by viewModel.todoItems.collectAsState(emptyList())
 
             LazyColumn(
                 modifier = listModifier

@@ -28,7 +28,7 @@ fun TodoItem.toPersistedModel(): PersistedTodoItem {
     return PersistedTodoItem().apply {
         fromTime = realmFromTime
         toTime = realmToTime
-        text = this.text
+        text = this@toPersistedModel.text
     }
 }
 
@@ -39,8 +39,8 @@ fun PersistedTodoItem.toDomainModel(
     val fromTimeLocalDateTime = fromTime.toLocalDateTime()
     val toTimeLocalDateTime = toTime.toLocalDateTime()
 
-    val isCurrentTime =
-        fromTimeLocalDateTime.isBefore(currentTime) && toTimeLocalDateTime.isAfter(currentTime)
+    val isCurrentTime = currentTime.isBefore(toTimeLocalDateTime) && currentTime.isAfter(fromTimeLocalDateTime)
+//        fromTimeLocalDateTime.isAfter(currentTime) && toTimeLocalDateTime.isBefore(currentTime)
 
     return TodoItem(
         time = "${
